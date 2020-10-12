@@ -31,20 +31,20 @@ class X01Match(MatchManager, MatchVisitTemplate):
             self.scores.append(STARTING_TOTAL)  # Might want to parameterize the starting total
             self.first9.append(None)
             self.averages.append(None)
+        self.match.status = MatchStatus.IN_PROGRESS
 
     def validate_visit(self, player_index, visit):
-        if self.match.last_player_index is player_index:
+        if self.match.last_player_index is player_index:  # Note: this won't work properly for 3 players...
             return False, "Player " + str(player_index + 1) + " is not in the correct sequence. Visit ignored."
 
-        if not self.match.active:
-            return False, "Game has ended."
-
+        if self.match.status is not MatchStatus.IN_PROGRESS:
+            return False, "Game is not in progress."
+        # print(str(self.match.last_player_index) + "-" + str(player_index))
         self.match.last_player_index = player_index
         return True, None
 
     def check_winning_condition(self, player_index, visit):
         """returns 1, 2 or 3 for when a dart closes the game / leg (i.e. finishing double) or 0 if not closed out
-
         :param player_index: position of player details in various lists
         :param visit: a list of 3 Darts (each containing multiplier and segment)
         :return: 0, 1, 2 or 3
@@ -55,16 +55,16 @@ class X01Match(MatchManager, MatchVisitTemplate):
             if dart.multiplier == DartMultiplier.DOUBLE and self.scores[player_index] - dart.get_score() == 0:
                 # game, shot!
                 self.scores[player_index] = 0
-                self.match.active = False
+                self.match.status = MatchStatus.FINISHED
                 return i
             else:
+                print("deducting for " + str(player_index))
                 self.scores[player_index] -= dart.get_score()
 
         return 0
 
     def record_statistics(self, player_index, visit, result):
         """Store stats both for in-memory immediate use and on disk for later recall
-
         :return:
         """
         if result is not 0:

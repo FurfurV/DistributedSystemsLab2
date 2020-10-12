@@ -31,7 +31,7 @@ class Visit:
 
     def add_dart(self, dart):
         self.darts.append(Dart(dart.multiplier,dart.segment))
-        self.darts.append(Dart(dart[0], dart[1]))
+        # self.darts.append(Dart(dart[0], dart[1]))
 
     def add_darts(self, darts):
         for dart in darts:
