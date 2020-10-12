@@ -6,3 +6,9 @@ class DartMultiplier(IntEnum):
     DOUBLE = 2
     TREBLE = 3
 
+class MatchStatus(IntEnum):
+    INVALID = 0
+    WAITING = 1
+    IN_PROGRESS = 2
+    FINISHED = 3
+
